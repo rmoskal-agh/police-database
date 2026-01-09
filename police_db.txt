@@ -1,0 +1,8 @@
+
+O;101;Jan;Kowalski;45;Komisarz;99701
+O;102;Anna;Nowak;32;Sierzant;99702
+S;201;Tomasz;Wlamywacz;28;Kradziez;0
+S;202;Vito;Corleone;60;Mafia;0
+S;303;Vikor;RAM;69;CHlanie;0
+O;999;Adam;Ehkem;30;Sierżant+;888
+S;33;Mati;Glocon;28;seksulane;1
