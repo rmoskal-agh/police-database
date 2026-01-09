@@ -1,51 +1,35 @@
 
 
-#pragma once
-#ifndef OFFICER_HPP
-#define OFFICER_HPP
 
-#include "Person.hpp"
+#include "Officer.hpp"
+#include <sstream>
 
 namespace rmpg {
 
-    /**
-     * @class Officer
-     * @brief Klasa reprezentująca policjanta.
-     * @details Dziedziczy po Person. Autor: Robert Moskal (RM)
-     */
-    class Officer : public Person {
-    private:
-        std::string rank;       ///< Stopień (np. Sierżant)
-        int badgeNumber;        ///< Numer odznaki
+    // --- AUTOR: Robert Moskal (RM) ---
 
-    public:
-        /**
-         * @brief Konstruktor domyślny.
-         */
-        Officer();
+    Officer::Officer() : Person(), rank("Cadet"), badgeNumber(0) {}
 
-        /**
-         * @brief Konstruktor parametryczny.
-         */
-        Officer(std::string fName, std::string lName, int age, int id, std::string rank, int badge);
+    Officer::Officer(std::string fName, std::string lName, int age, int id, std::string r, int badge)
+        : Person(fName, lName, age, id), rank(r), badgeNumber(badge) {}
 
-        /**
-         * @brief Destruktor.
-         */
-        ~Officer() override;
+    Officer::~Officer() {}
 
-        /**
-         * @brief Przeciążony operator inkrementacji (awansuje oficera wirtualnie).
-         * Przykład użycia operatora jednoargumentowego.
-         */
-        Officer& operator++();
+    // Operator ++ "awansuje" oficera przez dodanie "+" do rangi
+    // Jest to przykład "studenckiego" przeciążenia operatora
+    Officer& Officer::operator++() {
+        this->rank += "+";
+        return *this;
+    }
 
-        // Implementacja metody wirtualnej
-        std::string toCSV() const override;
+    std::string Officer::toCSV() const {
+        std::stringstream ss;
+        // Format: O (jako Officer), dane z Person, dane z Officer
+        ss << "O;" << id << ";" << firstName << ";" << lastName << ";" << age << ";" << rank << ";" << badgeNumber;
+        return ss.str();
+    }
 
-        // Gettery
-        std::string getRank() const;
-    };
+    std::string Officer::getRank() const {
+        return rank;
+    }
 }
-
-#endif // OFFICER_HPP
