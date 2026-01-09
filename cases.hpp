@@ -1,72 +1,51 @@
-#pragma once
+
+#ifndef CASE_HPP
+#define CASE_HPP
 
 #include <string>
-#include <stdexcept>
+#include <iostream>
+#include <vector>
 
 namespace rmpg {
 
-/**
- * @brief Enumeration representing basic case types.
- */
-enum class CaseType {
-    Theft,
-    Burglary,
-    Assault,
-    Homicide, 
-    DisruptingPeace,
-    Fraud,
-    Other
-};
-
-/**
- * @brief Represents a single police case.
- *
- * This class is a core data structure.
- * 
- * It contains no input/output logic.
- */
-class Case {
-private:
-    int id_; 
-    CaseType type_;
-    std::string description_;
-
-public:
-    // --- constructors ---
-
     /**
-     * @brief Default constructor.
+     * @class Case
+     * @brief Klasa reprezentująca sprawę policyjną.
+     * @details Autor: Robert Moskal (RM)
      */
-    Case();
+    class Case {
+    private:
+        int id;                     ///< ID sprawy
+        std::string type;           ///< Typ (Theft, Burglary, etc.)
+        std::string description;    ///< Opis zdarzenia
 
-    /**
-     * @brief Parameterized constructor.
-     *
-     * @param id Unique case identifier
-     * @param type Type of the case
-     * @param description Human-readable description, pressumably not longer than 120 characters.
-     */
-    Case(int id, CaseType type, const std::string& description);
+        // Pomocnicza metoda do sprawdzania typu
+        bool isValidType(const std::string& t) const;
 
-    // --- getters ---
+    public:
+        // Konstruktory
+        Case();
+        Case(int id, std::string type, std::string description);
 
-    int getId() const;
-    CaseType getType() const;
-    const std::string& getDescription() const;
+        // Destruktor
+        ~Case();
 
-    // --- setters ---
+        // Settery i Gettery
+        void setType(std::string newType);
+        std::string getType() const;
+        std::string getDescription() const;
+        int getId() const;
 
-    void setId(int id);
-    void setType(CaseType type);
-    void setDescription(const std::string& description);
+        /**
+         * @brief Zwraca format CSV do zapisu.
+         */
+        std::string toCSV() const;
 
-    // --- utilities ---
+        /**
+         * @brief Wyświetla dostępne typy przestępstw.
+         */
+        static void printAvailableTypes();
+    };
+}
 
-    /**
-     * @brief Converts case data into a readable string.
-     * Intended for use by the terminal UI layer.
-     */
-    std::string toString() const;
-};
-
-} // namespace rmpg
+#endif // CASE_HPP
