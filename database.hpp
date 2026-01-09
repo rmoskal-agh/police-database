@@ -1,37 +1,54 @@
+
+
 #pragma once
+#ifndef POLICEDATABASE_HPP
+#define POLICEDATABASE_HPP
 
+#include "Person.hpp"
 #include <vector>
-#include <memory>
-#include <optional>
-
-#include "persons.hpp"
-#include "cases.hpp"
+#include <string>
 
 namespace rmpg {
 
-class Database {
-public:
-    Database() = default;
+    /**
+     * @class PoliceDatabase
+     * @brief Główna klasa zarządzająca bazą danych.
+     * @details Odpowiada za I/O i przechowywanie obiektów. Autor: Piotr Grabowski (PG)
+     */
+    class PoliceDatabase {
+    private:
+        // Polimorficzny kontener - przechowuje wskaźniki do klasy bazowej
+        std::vector<Person*> records;
+        std::string dbFilename;
 
-    // ===== PERSONS =====
-    bool addPerson(std::shared_ptr<Person> person);
-    std::shared_ptr<Person> getPerson(std::size_t index) const;
-    bool removePerson(std::size_t index); // not to confuse removePerson with type of case - homicide
-    std::size_t personCount() const noexcept;
+        // Metoda pomocnicza do czyszczenia pamięci
+        void clearMemory();
 
-    // ===== CASES =====
-    bool addCase(const Case& c);
-    std::optional<Case> getCaseById(std::uint32_t id) const;
-    bool removeCaseById(std::uint32_t id);
-    std::size_t caseCount() const noexcept;
+    public:
+        /**
+         * @brief Konstruktor bazy danych.
+         * @param filename Nazwa pliku do zapisu/odczytu.
+         */
+        explicit PoliceDatabase(std::string filename);
 
-    // ===== CLEAR =====
-// brief this function clears
-    void clear();
+        /**
+         * @brief Destruktor. Zwalnia pamięć.
+         */
+        ~PoliceDatabase();
 
-private:
-    std::vector<std::shared_ptr<Person>> m_persons;
-    std::vector<Case> m_cases;
-};
+        // Metody zarządzające
+        void addPerson(Person* person);
+        void saveToFile();
+        void loadFromFile();
+        
+        // Zwraca string do wyświetlenia (nie drukuje sama!)
+        std::string getAllRecords() const;
 
-} // namespace rmpg
+        /**
+         * @brief Przeciążony operator += do dodawania osoby.
+         */
+        PoliceDatabase& operator+=(Person* p);
+    };
+}
+
+#endif // POLICEDATABASE_HPP
