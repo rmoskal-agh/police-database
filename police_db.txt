@@ -5,5 +5,5 @@ S;201;Voycheck;Ponywitch;28;Theft;0
 S;202;Simon;Carett;60;Mafia;0
 S;303;Vikor;RAM;69;CHlanie;0
 O;999;Adam;Ehkem;30;Sierżant+;888
-S;33;Matty;Towelsmith;28;abuse;1
-S;26;James;Colden;25;theft;1
+S;33;Matty;Towelsmith;28;Assault;1
+S;26;James;Colden;25;Theft;1
