@@ -1,91 +1,57 @@
-#include "cases.hpp"
+
+#include "Case.hpp"
+#include <algorithm> // do std::find
 
 namespace rmpg {
 
-// --- constructors ---
+    // Lista dozwolonych typów (hardcoded choices)
+    const std::vector<std::string> VALID_TYPES = {
+        "Theft", 
+        "Burglary", 
+        "Disrupting peace", 
+        "Assault",
+        "Other"
+    };
 
-Case::Case()
-    : id_(0),
-      type_(CaseType::Other),
-      description_("") {}
+    Case::Case() : id(0), type("Other"), description("Brak opisu") {}
 
-Case::Case(int id, CaseType type, const std::string& description)
-    : id_(0),
-      type_(CaseType::Other),
-      description_("") {
-
-    setId(id);
-    setType(type);
-    setDescription(description);
-}
-
-// --- getters ---
-
-int Case::getId() const {
-    return id_;
-}
-
-CaseType Case::getType() const {
-    return type_;
-}
-
-const std::string& Case::getDescription() const {
-    return description_;
-}
-
-// ID of cases is pressumed to be a three-digit number, either case, numbers lower than 0 won't be accepted in any sctructure
-
-void Case::setId(int id) {
-    if (id <= 0) {
-        throw std::invalid_argument("Case ID must be greater than zero.");
-    }
-    id_ = id;
-}
-
-void Case::setType(CaseType type) {
-    type_ = type;
-}
-
-void Case::setDescription(const std::string& description) {
-    if (description.empty()) {
-        throw std::invalid_argument("Case description cannot be empty.");
-    }
-    description_ = description;
-}
-
-// --- utilities ---
-
-std::string Case::toString() const {
-    std::string typeStr;
-
-    switch (type_) {
-        case CaseType::Theft:
-            typeStr = "Theft";
-            break;
-        case CaseType::Burglary:
-            typeStr = "Burglary";
-            break;
-        case CaseType::Assault:
-            typeStr = "Assault";
-            break;
-        case CaseType::Homicide:
-            typeStr = "Homicide";
-            break;
-        case CaseType::DisruptingPeace:
-            typeStr = "Disrupting the peace";
-            break;
-        case CaseType::Fraud:
-            typeStr = "Fraud";
-            break;
-        case CaseType::Other:
-        default:
-            typeStr = "Other";
-            break;
+    Case::Case(int id, std::string t, std::string desc) : id(id), description(desc) {
+        setType(t); // Używamy settera do walidacji
     }
 
-    return "Case ID: " + std::to_string(id_) +
-           " | Type: " + typeStr +
-           " | Description: " + description_;
-}
+    Case::~Case() {}
 
-} // namespace rmpg
+    bool Case::isValidType(const std::string& t) const {
+        for (const auto& valid : VALID_TYPES) {
+            if (valid == t) return true;
+        }
+        return false;
+    }
+
+    void Case::setType(std::string newType) {
+        if (isValidType(newType)) {
+            this->type = newType;
+        } else {
+            // Jeśli użytkownik wpisze coś dziwnego, ustawiamy "Other"
+            std::cout << "[INFO] Nieznany typ: " << newType << ". Ustawiono 'Other'.\n";
+            this->type = "Other";
+        }
+    }
+
+    std::string Case::getType() const { return type; }
+    std::string Case::getDescription() const { return description; }
+    int Case::getId() const { return id; }
+
+    std::string Case::toCSV() const {
+        // Format: C;ID;TYP;OPIS
+        return "C;" + std::to_string(id) + ";" + type + ";" + description;
+    }
+
+    void Case::printAvailableTypes() {
+        std::cout << "Dostepne typy: ";
+        for (const auto& t : VALID_TYPES) {
+            std::cout << "[" << t << "] ";
+        }
+        std::cout << "\n";
+    }
+}
