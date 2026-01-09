@@ -1,84 +1,119 @@
-#include "database.hpp"
+
+#include "PoliceDatabase.hpp"
+#include "Officer.hpp"
+#include "Suspect.hpp"
+#include <fstream>
+#include <sstream>
+#include <iostream> // Tylko do debugowania w razie błędów krytycznych
 
 namespace rmpg {
 
-// =====================
-// PERSONS
-// =====================
+    // --- AUTOR: Piotr Grabowski (PG) ---
 
-bool Database::addPerson(std::shared_ptr<Person> person) {
-    if (!person) {
-        return false;
+    PoliceDatabase::PoliceDatabase(std::string filename) : dbFilename(filename) {
+        // Próba załadowania danych przy starcie
+        loadFromFile();
     }
-    m_persons.push_back(std::move(person));
-    return true;
-}
 
-std::shared_ptr<Person>
-Database::getPerson(std::size_t index) const {
-    if (index >= m_persons.size()) {
-        return nullptr;
+    PoliceDatabase::~PoliceDatabase() {
+        // Zapis przy wyjściu
+        saveToFile();
+        clearMemory();
     }
-    return m_persons[index];
-}
 
-bool Database::removePerson(std::size_t index) {
-    if (index >= m_persons.size()) {
-        return false;
+    void PoliceDatabase::clearMemory() {
+        for (Person* p : records) {
+            delete p; // Ręczne zarządzanie pamięcią (wymagane w zadaniu zamiast smart pointers)
+        }
+        records.clear();
     }
-    m_persons.erase(m_persons.begin() + index);
-    return true;
-}
 
-std::size_t Database::personCount() const noexcept {
-    return m_persons.size();
-}
+    void PoliceDatabase::addPerson(Person* person) {
+        records.push_back(person);
+    }
 
-// =====================
-// CASES
-// =====================
+    // Przeciążenie operatora += jako alternatywa dla addPerson
+    PoliceDatabase& PoliceDatabase::operator+=(Person* p) {
+        this->addPerson(p);
+        return *this;
+    }
 
-bool Database::addCase(const Case& c) {
-    for (const auto& existing : m_cases) {
-        if (existing.getId() == c.getId()) {
-            return false;
+    void PoliceDatabase::saveToFile() {
+        std::ofstream file(dbFilename);
+        if (file.is_open()) {
+            for (const auto* p : records) {
+                file << p->toCSV() << "\n";
+            }
+            file.close();
         }
     }
-    m_cases.push_back(c);
-    return true;
-}
 
-std::optional<Case>
-Database::getCaseById(std::uint32_t id) const {
-    for (const auto& c : m_cases) {
-        if (c.getId() == id) {
-            return c;
+    void PoliceDatabase::loadFromFile() {
+        // Najpierw czyścimy obecną pamięć, żeby nie dublować przy reloadzie
+        clearMemory();
+
+        std::ifstream file(dbFilename);
+        std::string line;
+
+        if (!file.is_open()) return; // Jeśli plik nie istnieje, po prostu zaczynamy z pustą bazą
+
+        while (std::getline(file, line)) {
+            std::stringstream ss(line);
+            std::string segment;
+            std::vector<std::string> parts;
+
+            while (std::getline(ss, segment, ';')) {
+                parts.push_back(segment);
+            }
+
+            if (parts.empty()) continue;
+
+            // Parsowanie CSV - prosty parser studencki
+            try {
+                char type = parts[0][0];
+                int id = std::stoi(parts[1]);
+                std::string fName = parts[2];
+                std::string lName = parts[3];
+                int age = std::stoi(parts[4]);
+
+                if (type == 'O') {
+                    // Officer
+                    std::string rank = parts[5];
+                    int badge = std::stoi(parts[6]);
+                    records.push_back(new Officer(fName, lName, age, id, rank, badge));
+                } 
+                else if (type == 'S') {
+                    // Suspect
+                    std::string crime = parts[5];
+                    bool dangerous = (parts[6] == "1");
+                    records.push_back(new Suspect(fName, lName, age, id, crime, dangerous));
+                }
+            } catch (...) {
+                // Ignorujemy uszkodzone linie
+                continue;
+            }
         }
+        file.close();
     }
-    return std::nullopt;
-}
 
-bool Database::removeCaseById(std::uint32_t id) {
-    for (auto it = m_cases.begin(); it != m_cases.end(); ++it) {
-        if (it->getId() == id) {
-            m_cases.erase(it);
-            return true;
+    std::string PoliceDatabase::getAllRecords() const {
+        std::stringstream ss;
+        ss << "--- Baza Danych Policji ---\n";
+        if (records.empty()) {
+            ss << "(Baza jest pusta)\n";
         }
+        for (const auto* p : records) {
+            // Używamy polimorfizmu i przeciążonego operatora <<
+            ss << *p; // To wywoła operator<< z Person.cpp
+            
+            // Rzutowanie dynamiczne (RTTI) aby pokazać szczegóły specyficzne dla klas
+            if (const Officer* o = dynamic_cast<const Officer*>(p)) {
+                ss << " [POLICJANT: " << o->getRank() << "]";
+            } else if (const Suspect* s = dynamic_cast<const Suspect*>(p)) {
+                ss << " [PODEJRZANY: " << s->getCrime() << (s->getIsDangerous() ? " !!!" : "") << "]";
+            }
+            ss << "\n";
+        }
+        return ss.str();
     }
-    return false;
 }
-
-std::size_t Database::caseCount() const noexcept {
-    return m_cases.size();
-}
-
-// =====================
-// CLEAR
-// =====================
-
-void Database::clear() {
-    m_persons.clear();
-    m_cases.clear();
-}
-
-} // namespace rmpg
