@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <limits>
 #include "Person.hpp"
@@ -16,14 +15,14 @@ int main() {
     // Inicjalizacja bazy danych (przestrzeń nazw PG)
     rmpg::PoliceDatabase db("police_db.txt");
 
-    std::cout << "Witaj w Systemie Policyjnym (Autorzy: R. Moskal & P. Grabowski)\n";
+    std::cout << "Welcome to Police Records (System provided by R. Moskal & P. Grabowski)\n";
     
     while (true) {
-        std::cout << "\n1. Wyswietl baze\n";
-        std::cout << "2. Dodaj Policjanta (RM)\n";
-        std::cout << "3. Dodaj Podejrzanego (PG)\n";
-        std::cout << "4. Zapisz i Wyjdz\n";
-        std::cout << "Wybor: ";
+        std::cout << "\n1. Display all records\n";
+        std::cout << "2. Add a police officer\n";
+        std::cout << "3. Add a suspect\n";
+        std::cout << "4. Save and close\n";
+        std::cout << "Choice: ";
 
         int choice;
         if (!(std::cin >> choice)) {
@@ -42,18 +41,18 @@ int main() {
                 std::string fName, lName, rank;
                 int age, id, badge;
                 
-                std::cout << "Imie: "; std::cin >> fName;
-                std::cout << "Nazwisko: "; std::cin >> lName;
-                std::cout << "Wiek: "; std::cin >> age;
+                std::cout << "First name: "; std::cin >> fName;
+                std::cout << "Last name: "; std::cin >> lName;
+                std::cout << "Age: "; std::cin >> age;
                 std::cout << "ID: "; std::cin >> id;
-                std::cout << "Stopien: "; std::cin >> rank;
-                std::cout << "Nr odznaki: "; std::cin >> badge;
+                std::cout << "Rank: "; std::cin >> rank;
+                std::cout << "Badge ID: "; std::cin >> badge;
 
                 // Tworzenie obiektu dynamicznie (polimorfizm)
                 rmpg::Officer* newOfficer = new rmpg::Officer(fName, lName, age, id, rank, badge);
                 
                 // Demonstracja operatora RM (awans)
-                std::cout << "Czy awansowac od razu? (1-Tak, 0-Nie): ";
+                std::cout << "Do you want to promote this person? (1-Yes, 0-No): ";
                 int promote;
                 std::cin >> promote;
                 if(promote) {
@@ -61,34 +60,42 @@ int main() {
                 }
 
                 db += newOfficer; // Użycie operatora += z klasy PG
-                std::cout << "Dodano policjanta.\n";
+                std::cout << "A police officer has been added.\n";
             }
             else if (choice == 3) {
-                std::string fName, lName, crime;
+                std::string fName, lName;
                 int age, id;
                 bool dangerous;
-                
-                std::cout << "Imie: "; std::cin >> fName;
-                std::cout << "Nazwisko: "; std::cin >> lName;
-                std::cout << "Wiek: "; std::cin >> age;
+                            
+                std::cout << "First name: "; std::cin >> fName;
+                std::cout << "Last name: "; std::cin >> lName;
+                std::cout << "Age: "; std::cin >> age;
                 std::cout << "ID: "; std::cin >> id;
-                std::cout << "Przestepstwo: "; std::cin >> crime;
-                std::cout << "Czy niebezpieczny (1-Tak, 0-Nie): "; std::cin >> dangerous;
-
-                rmpg::Suspect* newSuspect = new rmpg::Suspect(fName, lName, age, id, crime, dangerous);
-                
-                // Demonstracja metody i obsługi wyjątków przy tworzeniu
-                // (wyjątek zostanie rzucony w konstruktorze jeśli dane są złe, np. wiek < 18)
-
+            
+                rmpg::Suspect::printCrimeMenu();
+            
+                int crimeChoice;
+                std::cout << "Choice: ";
+                std::cin >> crimeChoice;
+            
+                std::string crime = rmpg::Suspect::crimeFromChoice(crimeChoice);
+            
+                std::cout << "Are they dangerous (1-Yes, 0-No): ";
+                std::cin >> dangerous;
+            
+                rmpg::Suspect* newSuspect =
+                    new rmpg::Suspect(fName, lName, age, id, crime, dangerous);
+            
                 db.addPerson(newSuspect);
-                std::cout << "Dodano podejrzanego.\n";
+                std::cout << "A suspect has been added.\n";
             }
+
         }
         catch (const std::exception& e) {
-            std::cerr << "[BLAD]: " << e.what() << "\n";
+            std::cerr << "[Error]: " << e.what() << "\n";
         }
     }
 
-    std::cout << "Zapisano dane. Koniec programu.\n";
+    std::cout << "Data has been saved succesfully. End of session.\n";
     return 0;
 }
