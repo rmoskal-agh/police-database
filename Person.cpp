@@ -19,7 +19,7 @@ namespace rmpg {
 
     void Person::setAge(int newAge) {
         if (newAge < MIN_AGE) {
-            throw std::invalid_argument("Wiek nie moze byc mniejszy niz 18 lat!");
+            throw std::invalid_argument("Individuals whose ages are lower than 18 are not allowed to be recorded here.");
         }
         this->age = newAge;
     }
@@ -41,7 +41,7 @@ namespace rmpg {
     }
 
     std::ostream& operator<<(std::ostream& os, const Person& p) {
-        os << "ID: " << p.id << " | " << p.firstName << " " << p.lastName << " (" << p.age << " lat)";
+        os << "ID: " << p.id << " | " << p.firstName << " " << p.lastName << " (" << p.age << " years old)";
         return os;
     }
 }
