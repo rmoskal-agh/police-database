@@ -13,7 +13,7 @@ namespace rmpg {
         "Other"
     };
 
-    Case::Case() : id(0), type("Other"), description("Brak opisu") {}
+    Case::Case() : id(0), type("Other"), description("No description") {}
 
     Case::Case(int id, std::string t, std::string desc) : id(id), description(desc) {
         setType(t); // Używamy settera do walidacji
@@ -33,7 +33,7 @@ namespace rmpg {
             this->type = newType;
         } else {
             // Jeśli użytkownik wpisze coś dziwnego, ustawiamy "Other"
-            std::cout << "[INFO] Nieznany typ: " << newType << ". Ustawiono 'Other'.\n";
+            std::cout << "[INFO] Unknown type: " << newType << ". Set as 'Other'.\n";
             this->type = "Other";
         }
     }
@@ -48,7 +48,7 @@ namespace rmpg {
     }
 
     void Case::printAvailableTypes() {
-        std::cout << "Dostepne typy: ";
+        std::cout << "Select a type from the following: ";
         for (const auto& t : VALID_TYPES) {
             std::cout << "[" << t << "] ";
         }
