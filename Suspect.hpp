@@ -1,9 +1,10 @@
-
 #pragma once
 #ifndef SUSPECT_HPP
 #define SUSPECT_HPP
 
 #include "Person.hpp"
+#include <string>
+#include <vector>
 
 namespace rmpg {
 
@@ -17,39 +18,36 @@ namespace rmpg {
         std::string crimeType;  ///< Rodzaj przestępstwa
         bool isDangerous;       ///< Czy jest niebezpieczny
 
+        static const std::vector<std::string> CRIME_TYPES;
+
     public:
-        /**
-         * @brief Konstruktor domyślny.
-         */
+        // Konstruktory
         Suspect();
+        Suspect(std::string fName,
+                std::string lName,
+                int age,
+                int id,
+                std::string crime,
+                bool dangerous);
 
-        /**
-         * @brief Konstruktor parametryczny.
-         */
-        Suspect(std::string fName, std::string lName, int age, int id, std::string crime, bool dangerous);
-
-        /**
-         * @brief Destruktor.
-         */
         ~Suspect() override;
 
-        /**
-         * @brief Setter z walidacją (rzuca wyjątek).
-         */
+        // Logika przestępstw (MENU)
+        static void printCrimeMenu();
+        static std::string crimeFromChoice(int choice);
+
+        // Settery / gettery
         void setCrimeType(std::string crime);
-
-        // Implementacja metody wirtualnej
-        std::string toCSV() const override;
-
-        /**
-         * @brief Przeciążony operator negacji.
-         * Zmienia status niebezpieczeństwa (np. po resocjalizacji).
-         */
-        bool operator!();
-        
         bool getIsDangerous() const;
         std::string getCrime() const;
+
+        // CSV
+        std::string toCSV() const override;
+
+        // Operator
+        bool operator!();
     };
 }
 
 #endif // SUSPECT_HPP
+
