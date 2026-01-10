@@ -7,3 +7,8 @@ S;303;Vikor;RAM;69;Other;0
 O;999;Adam;Ehkem;30;Sierżant+;888
 S;33;Matty;Towelsmith;28;Assault;1
 S;26;James;Colden;25;Theft;1
+S;870;Ihle;Ikdygs;25;Other;0
+O;435;Tsar;Nookh;30;Chief;244
+S;452;Dee;Snuts;23;Fraud;0
+O;356;Michael;Drunkson;23;Chief+;21
+
