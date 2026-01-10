@@ -98,9 +98,9 @@ namespace rmpg {
 
     std::string PoliceDatabase::getAllRecords() const {
         std::stringstream ss;
-        ss << "--- Baza Danych Policji ---\n";
+        ss << "--- Police Database ---\n";
         if (records.empty()) {
-            ss << "(Baza jest pusta)\n";
+            ss << "(No records available)\n";
         }
         for (const auto* p : records) {
             // Używamy polimorfizmu i przeciążonego operatora <<
@@ -108,9 +108,9 @@ namespace rmpg {
             
             // Rzutowanie dynamiczne (RTTI) aby pokazać szczegóły specyficzne dla klas
             if (const Officer* o = dynamic_cast<const Officer*>(p)) {
-                ss << " [POLICJANT: " << o->getRank() << "]";
+                ss << " [OFFICER: " << o->getRank() << "]";
             } else if (const Suspect* s = dynamic_cast<const Suspect*>(p)) {
-                ss << " [PODEJRZANY: " << s->getCrime() << (s->getIsDangerous() ? " !!!" : "") << "]";
+                ss << " [SUSPECT: " << s->getCrime() << (s->getIsDangerous() ? " !" : "") << "]";
             }
             ss << "\n";
         }
