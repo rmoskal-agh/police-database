@@ -1,5 +1,3 @@
-
-
 #pragma once
 #ifndef POLICEDATABASE_HPP
 #define POLICEDATABASE_HPP
@@ -10,45 +8,32 @@
 
 namespace rmpg {
 
-    /**
-     * @class PoliceDatabase
-     * @brief Główna klasa zarządzająca bazą danych.
-     * @details Odpowiada za I/O i przechowywanie obiektów. Autor: Piotr Grabowski (PG)
-     */
-    class PoliceDatabase {
-    private:
-        // Polimorficzny kontener - przechowuje wskaźniki do klasy bazowej
-        std::vector<Person*> records;
-        std::string dbFilename;
+class PoliceDatabase {
+private:
+    std::vector<Person*> records;
+    std::string dbFilename;
 
-        // Metoda pomocnicza do czyszczenia pamięci
-        void clearMemory();
+    void clearMemory();
+    Person* findById(int id);
 
-    public:
-        /**
-         * @brief Konstruktor bazy danych.
-         * @param filename Nazwa pliku do zapisu/odczytu.
-         */
-        explicit PoliceDatabase(std::string filename);
+public:
+    explicit PoliceDatabase(std::string filename);
+    ~PoliceDatabase();
 
-        /**
-         * @brief Destruktor. Zwalnia pamięć.
-         */
-        ~PoliceDatabase();
+    void addPerson(Person* person);
+    PoliceDatabase& operator+=(Person* p);
 
-        // Metody zarządzające
-        void addPerson(Person* person);
-        void saveToFile();
-        void loadFromFile();
-        
-        // Zwraca string do wyświetlenia (nie drukuje sama!)
-        std::string getAllRecords() const;
+    void saveToFile();
+    void loadFromFile();
 
-        /**
-         * @brief Przeciążony operator += do dodawania osoby.
-         */
-        PoliceDatabase& operator+=(Person* p);
-    };
+    std::string getAllRecords() const;
+
+    // 🔹 NEW
+    bool removeById(int id);
+    bool editById(int id);
+};
+
 }
 
-#endif // POLICEDATABASE_HPP
+#endif
+
