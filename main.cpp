@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <limits>
 #include "Person.hpp"
@@ -21,7 +22,10 @@ int main() {
         std::cout << "\n1. Display all records\n";
         std::cout << "2. Add a police officer\n";
         std::cout << "3. Add a suspect\n";
-        std::cout << "4. Save and close\n";
+        std::cout << "4. Edit record by ID\n";
+        std::cout << "5. Remove record by ID\n";
+        std::cout << "6. Save and close\n";
+
         std::cout << "Choice: ";
 
         int choice;
@@ -30,7 +34,7 @@ int main() {
             continue;
         }
 
-        if (choice == 4) break;
+        if (choice == 6) break;
 
         try {
             if (choice == 1) {
@@ -88,6 +92,24 @@ int main() {
             
                 db.addPerson(newSuspect);
                 std::cout << "A suspect has been added.\n";
+            }
+            else if (choice == 4) {
+                int id;
+                std::cout << "Enter ID to edit: ";
+                std::cin >> id;
+            
+                if (!db.editById(id))
+                    std::cout << "Record not found.\n";
+            }
+            else if (choice == 5) {
+                int id;
+                std::cout << "Enter ID to remove: ";
+                std::cin >> id;
+            
+                if (db.removeById(id))
+                    std::cout << "Record removed.\n";
+                else
+                    std::cout << "Record not found.\n";
             }
 
         }
