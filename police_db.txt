@@ -1,14 +1,14 @@
-
 O;101;Jan;Kowalski;45;Komisarz;99701
-O;102;Anna;Nowak;32;Sierzant;99702
 S;201;Voycheck;Ponywitch;28;Theft;0
 S;202;Simon;Carett;60;Mafia;0
 S;303;Vikor;RAM;69;Other;0
 O;999;Adam;Ehkem;30;Sierżant+;888
 S;33;Matty;Towelsmith;28;Assault;1
-S;26;James;Colden;25;Theft;1
+S;26;James;Colden;26;Fraud;1
 S;870;Ihle;Ikdygs;25;Other;0
 O;435;Tsar;Nookh;30;Chief;244
 S;452;Dee;Snuts;23;Fraud;0
 O;356;Michael;Drunkson;23;Chief+;21
+S;890;Antoine;Susse;19;Disturbing the peace;0
+O;780;Spigniv Gallium;;54;Cadet;0
 
