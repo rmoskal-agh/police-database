@@ -4,116 +4,189 @@
 #include "Suspect.hpp"
 #include <fstream>
 #include <sstream>
-#include <iostream> // Tylko do debugowania w razie błędów krytycznych
+#include <iostream>
 
 namespace rmpg {
 
-    // --- AUTOR: Piotr Grabowski (PG) ---
+PoliceDatabase::PoliceDatabase(std::string filename)
+    : dbFilename(filename) {
+    loadFromFile();
+}
 
-    PoliceDatabase::PoliceDatabase(std::string filename) : dbFilename(filename) {
-        // Próba załadowania danych przy starcie
-        loadFromFile();
-    }
+PoliceDatabase::~PoliceDatabase() {
+    saveToFile();
+    clearMemory();
+}
 
-    PoliceDatabase::~PoliceDatabase() {
-        // Zapis przy wyjściu
-        saveToFile();
-        clearMemory();
-    }
+void PoliceDatabase::clearMemory() {
+    for (Person* p : records)
+        delete p;
+    records.clear();
+}
 
-    void PoliceDatabase::clearMemory() {
-        for (Person* p : records) {
-            delete p; // Ręczne zarządzanie pamięcią (wymagane w zadaniu zamiast smart pointers)
-        }
-        records.clear();
-    }
+void PoliceDatabase::addPerson(Person* person) {
+    records.push_back(person);
+}
 
-    void PoliceDatabase::addPerson(Person* person) {
-        records.push_back(person);
-    }
+PoliceDatabase& PoliceDatabase::operator+=(Person* p) {
+    addPerson(p);
+    return *this;
+}
 
-    // Przeciążenie operatora += jako alternatywa dla addPerson
-    PoliceDatabase& PoliceDatabase::operator+=(Person* p) {
-        this->addPerson(p);
-        return *this;
-    }
+void PoliceDatabase::saveToFile() {
+    std::ofstream file(dbFilename);
+    if (!file) return;
 
-    void PoliceDatabase::saveToFile() {
-        std::ofstream file(dbFilename);
-        if (file.is_open()) {
-            for (const auto* p : records) {
-                file << p->toCSV() << "\n";
+    for (const auto* p : records)
+        file << p->toCSV() << "\n";
+}
+
+void PoliceDatabase::loadFromFile() {
+    clearMemory();
+
+    std::ifstream file(dbFilename);
+    if (!file) return;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::vector<std::string> parts;
+        std::string seg;
+
+        while (std::getline(ss, seg, ';'))
+            parts.push_back(seg);
+
+        try {
+            char type = parts[0][0];
+            int id = std::stoi(parts[1]);
+            std::string fn = parts[2];
+            std::string ln = parts[3];
+            int age = std::stoi(parts[4]);
+
+            if (type == 'O') {
+                records.push_back(new Officer(
+                    fn, ln, age, id,
+                    parts[5], std::stoi(parts[6])
+                ));
             }
-            file.close();
-        }
-    }
-
-    void PoliceDatabase::loadFromFile() {
-        // Najpierw czyścimy obecną pamięć, żeby nie dublować przy reloadzie
-        clearMemory();
-
-        std::ifstream file(dbFilename);
-        std::string line;
-
-        if (!file.is_open()) return; // Jeśli plik nie istnieje, po prostu zaczynamy z pustą bazą
-
-        while (std::getline(file, line)) {
-            std::stringstream ss(line);
-            std::string segment;
-            std::vector<std::string> parts;
-
-            while (std::getline(ss, segment, ';')) {
-                parts.push_back(segment);
+            else if (type == 'S') {
+                records.push_back(new Suspect(
+                    fn, ln, age, id,
+                    parts[5], parts[6] == "1"
+                ));
             }
-
-            if (parts.empty()) continue;
-
-            // Parsowanie CSV - prosty parser studencki
-            try {
-                char type = parts[0][0];
-                int id = std::stoi(parts[1]);
-                std::string fName = parts[2];
-                std::string lName = parts[3];
-                int age = std::stoi(parts[4]);
-
-                if (type == 'O') {
-                    // Officer
-                    std::string rank = parts[5];
-                    int badge = std::stoi(parts[6]);
-                    records.push_back(new Officer(fName, lName, age, id, rank, badge));
-                } 
-                else if (type == 'S') {
-                    // Suspect
-                    std::string crime = parts[5];
-                    bool dangerous = (parts[6] == "1");
-                    records.push_back(new Suspect(fName, lName, age, id, crime, dangerous));
-                }
-            } catch (...) {
-                // Ignorujemy uszkodzone linie
-                continue;
-            }
+        } catch (...) {
+            continue;
         }
-        file.close();
-    }
-
-    std::string PoliceDatabase::getAllRecords() const {
-        std::stringstream ss;
-        ss << "--- Police Database ---\n";
-        if (records.empty()) {
-            ss << "(No records available)\n";
-        }
-        for (const auto* p : records) {
-            // Używamy polimorfizmu i przeciążonego operatora <<
-            ss << *p; // To wywoła operator<< z Person.cpp
-            
-            // Rzutowanie dynamiczne (RTTI) aby pokazać szczegóły specyficzne dla klas
-            if (const Officer* o = dynamic_cast<const Officer*>(p)) {
-                ss << " [OFFICER: " << o->getRank() << "]";
-            } else if (const Suspect* s = dynamic_cast<const Suspect*>(p)) {
-                ss << " [SUSPECT: " << s->getCrime() << (s->getIsDangerous() ? " !" : "") << "]";
-            }
-            ss << "\n";
-        }
-        return ss.str();
     }
 }
+
+std::string PoliceDatabase::getAllRecords() const {
+    std::stringstream ss;
+    ss << "--- Police Database ---\n";
+
+    for (const auto* p : records) {
+        ss << *p;
+
+        if (const Officer* o = dynamic_cast<const Officer*>(p)) {
+            ss << " [OFFICER: " << o->getRank() << "]";
+        }
+        else if (const Suspect* s = dynamic_cast<const Suspect*>(p)) {
+            ss << " [SUSPECT: " << s->getCrime()
+               << (s->getIsDangerous() ? " !" : "") << "]";
+        }
+        ss << "\n";
+    }
+    return ss.str();
+}
+
+// ---------- NEW ----------
+
+Person* PoliceDatabase::findById(int id) {
+    for (auto* p : records)
+        if (p->getId() == id)
+            return p;
+    return nullptr;
+}
+
+bool PoliceDatabase::removeById(int id) {
+    for (auto it = records.begin(); it != records.end(); ++it) {
+        if ((*it)->getId() == id) {
+            delete *it;
+            records.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool PoliceDatabase::editById(int id) {
+    Person* p = findById(id);
+    if (!p) return false;
+
+    std::cout << "\nEditing record ID " << id << "\n";
+    std::cout << "What do you want to edit?\n";
+    std::cout << "1. Age\n";
+
+    bool isOfficer = dynamic_cast<Officer*>(p);
+    bool isSuspect = dynamic_cast<Suspect*>(p);
+
+    if (isOfficer) {
+        std::cout << "2. Officer rank\n";
+    }
+    if (isSuspect) {
+        std::cout << "3. Crime type\n";
+        std::cout << "4. Dangerous flag\n";
+    }
+
+    std::cout << "Choice: ";
+    int choice;
+    std::cin >> choice;
+
+    try {
+        if (choice == 1) {
+            int newAge;
+            std::cout << "New age: ";
+            std::cin >> newAge;
+            p->setAge(newAge);
+        }
+        else if (choice == 2 && isOfficer) {
+            Officer* o = dynamic_cast<Officer*>(p);
+            std::string newRank;
+            std::cout << "New rank: ";
+            std::cin >> newRank;
+
+            // najprostsza i bezpieczna wersja akademicka
+            *o = Officer(
+                o->getName(), "", o->getAge(), o->getId(), newRank, 0
+            );
+        }
+        else if (choice == 3 && isSuspect) {
+            Suspect* s = dynamic_cast<Suspect*>(p);
+            Suspect::printCrimeMenu();
+            int c;
+            std::cin >> c;
+            s->setCrimeType(Suspect::crimeFromChoice(c));
+        }
+        else if (choice == 4 && isSuspect) {
+            Suspect* s = dynamic_cast<Suspect*>(p);
+            !(*s); // toggle dangerous
+        }
+        else {
+            std::cout << "Invalid choice.\n";
+            return false;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cout << "[Error] " << e.what() << "\n";
+        return false;
+    }
+
+    std::cout << "Record updated successfully.\n";
+    return true;
+}
+
+
+}
+
+
