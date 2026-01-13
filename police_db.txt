@@ -11,4 +11,3 @@ S;452;Dee;Snuts;23;Fraud;0
 O;356;Michael;Drunkson;23;Chief+;21
 S;890;Antoine;Susse;19;Disturbing the peace;0
 O;780;Spigniv Gallium;;54;Cadet;0
-
