@@ -4,17 +4,14 @@
 
 namespace rmpg {
 
-    // --- AUTOR: Robert Moskal (RM) ---
-
     Person::Person() : firstName("Unknown"), lastName("Unknown"), age(MIN_AGE), id(0) {}
 
     Person::Person(std::string fName, std::string lName, int a, int i) 
         : firstName(fName), lastName(lName), id(i) {
-        setAge(a); // Używamy settera, żeby sprawdzić poprawność
+        setAge(a); 
     }
 
     Person::~Person() {
-        // Wirtualny destruktor - ciało puste, ale konieczne dla polimorfizmu
     }
 
     void Person::setAge(int newAge) {
