@@ -7,69 +7,66 @@
 #include <string>
 #include <iostream>
 
-/**
- * @namespace rmpg
- * @brief Przestrzeń nazw dla projektu Roberta Moskala i Piotra Grabowskiego.
- */
 namespace rmpg {
 
     /**
      * @class Person
-     * @brief Klasa bazowa reprezentująca osobę w bazie danych.
-     * @details Autor: Robert Moskal (RM)
+     * @brief A core class that represent an entry in the database. Both suspect and officer inherit for it.
+     * @details First and last name, age and ID are universal for every entry. ID cannot be edited by program later on.
      */
     class Person {
     protected:
-        std::string firstName; ///< Imię osoby
-        std::string lastName;  ///< Nazwisko osoby
-        int age;               ///< Wiek osoby
-        int id;                ///< Unikalne ID
+        std::string firstName; 
+        std::string lastName;  
+        int age;               
+        int id;                
 
-        /// Stała statyczna dla celów optymalizacji
+        /// using of constexpr for the sake of optimalization
         static constexpr int MIN_AGE = 18;
 
     public:
         /**
-         * @brief Konstruktor domyślny.
+         * @brief deafault constructor
          */
         Person();
 
         /**
-         * @brief Konstruktor parametryczny.
-         * @param fName Imię
-         * @param lName Nazwisko
-         * @param age Wiek
-         * @param id Numer ID
+         * @brief parametrical constructor
+         * @param fName first name
+         * @param lName last name
+         * @param age not lower than 18, 
+         * @param id 
          */
         Person(std::string fName, std::string lName, int age, int id);
 
-        /**
-         * @brief Wirtualny destruktor.
-         */
+        
         virtual ~Person();
 
-        // Gettery i Settery (z wyjątkami)
+        
         void setAge(int newAge);
         int getAge() const;
         std::string getName() const;
         int getId() const;
 
         /**
-         * @brief Metoda czysto wirtualna do pobierania danych w formacie CSV.
-         * @return String z danymi oddzielonymi średnikami.
+         * @brief Virtual metod used to download data in CSV format
+         * @return strings separated by semicolons (;) see police_db.txt file for reference
          */
         virtual std::string toCSV() const = 0;
 
         /**
-         * @brief Przeciążony operator porównania.
+         * @brief overloaded compare operator
          */
         bool operator==(const Person& other) const;
 
         /**
-         * @brief Funkcja zaprzyjaźniona do wypisywania na strumień.
+        * @brief Friend stream operator for printing Person objects.
+         *
+         * Enables formatted output of a Person instance using standard streams.
          */
         friend std::ostream& operator<<(std::ostream& os, const Person& p);
     };
 }
 
 #endif // PERSON_HPP
+
