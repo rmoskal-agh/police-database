@@ -9,40 +9,37 @@ namespace rmpg {
 
     /**
      * @class Officer
-     * @brief Klasa reprezentująca policjanta.
-     * @details Dziedziczy po Person. Autor: Robert Moskal (RM)
+     * @brief This class represents a single entry of the Officer (depitcted O in the database file)
+     * @details Inherits from class Person
      */
     class Officer : public Person {
     private:
-        std::string rank;       ///< Stopień (np. Sierżant)
-        int badgeNumber;        ///< Numer odznaki
+        std::string rank;       
+        int badgeNumber;        
 
     public:
         /**
-         * @brief Konstruktor domyślny.
+         * @brief Default constructor
          */
         Officer();
 
         /**
-         * @brief Konstruktor parametryczny.
+         * @brief Parametrical constructor 
          */
         Officer(std::string fName, std::string lName, int age, int id, std::string rank, int badge);
 
-        /**
-         * @brief Destruktor.
-         */
+        
         ~Officer() override;
 
         /**
-         * @brief Przeciążony operator inkrementacji (awansuje oficera wirtualnie).
-         * Przykład użycia operatora jednoargumentowego.
+         * @brief Overload of on operator here implies promoting of an officer 
+         * Serves as an example of overloading a single-argument operator 
          */
         Officer& operator++();
 
-        // Implementacja metody wirtualnej
+        // an implification of an virtual metod
         std::string toCSV() const override;
 
-        // Gettery
         std::string getRank() const;
     };
 }
