@@ -1,12 +1,9 @@
 
-
-
 #include "Officer.hpp"
 #include <sstream>
 
 namespace rmpg {
 
-    // --- AUTOR: Robert Moskal (RM) ---
 
     Officer::Officer() : Person(), rank("Cadet"), badgeNumber(0) {}
 
@@ -15,8 +12,6 @@ namespace rmpg {
 
     Officer::~Officer() {}
 
-    // Operator ++ "awansuje" oficera przez dodanie "+" do rangi
-    // Jest to przykład "studenckiego" przeciążenia operatora
     Officer& Officer::operator++() {
         this->rank += "+";
         return *this;
@@ -24,7 +19,6 @@ namespace rmpg {
 
     std::string Officer::toCSV() const {
         std::stringstream ss;
-        // Format: O (jako Officer), dane z Person, dane z Officer
         ss << "O;" << id << ";" << firstName << ";" << lastName << ";" << age << ";" << rank << ";" << badgeNumber;
         return ss.str();
     }
