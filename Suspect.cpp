@@ -5,8 +5,6 @@
 
 namespace rmpg {
 
-    // --- AUTOR: Piotr Grabowski (PG) ---
-
     const std::vector<std::string> Suspect::CRIME_TYPES = {
         "Theft",
         "Burglary",
