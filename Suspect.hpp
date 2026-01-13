@@ -10,18 +10,19 @@ namespace rmpg {
 
     /**
      * @class Suspect
-     * @brief Klasa reprezentująca podejrzanego/przestępcę.
-     * @details Dziedziczy po Person. Autor: Piotr Grabowski (PG)
+     * @brief Class that represent a suspect, an singual entry in the database.
+     * @details inherits from Person, type of crimes are limited to 5 + "other" for the simplicity
+     * of gathering statistics. See Suspect.cpp for reference
      */
     class Suspect : public Person {
     private:
-        std::string crimeType;  ///< Rodzaj przestępstwa
-        bool isDangerous;       ///< Czy jest niebezpieczny
+        std::string crimeType;  
+        bool isDangerous;       
 
         static const std::vector<std::string> CRIME_TYPES;
 
     public:
-        // Konstruktory
+        
         Suspect();
         Suspect(std::string fName,
                 std::string lName,
@@ -32,11 +33,11 @@ namespace rmpg {
 
         ~Suspect() override;
 
-        // Logika przestępstw (MENU)
+        // Uses crime menu. See Suspect.cpp for reference
         static void printCrimeMenu();
         static std::string crimeFromChoice(int choice);
 
-        // Settery / gettery
+        
         void setCrimeType(std::string crime);
         bool getIsDangerous() const;
         std::string getCrime() const;
@@ -50,4 +51,3 @@ namespace rmpg {
 }
 
 #endif // SUSPECT_HPP
-
